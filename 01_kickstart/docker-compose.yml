@@ -3,27 +3,52 @@ version: "3"
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     environment:
-      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - kafka
-    extra_hosts:
-      - "moby:127.0.0.1"
 
-  kafka:
+  kafka1:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka1
+    ports:
+      - 19092:19092
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    extra_hosts:
-      - "moby:127.0.0.1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:19092
     networks:
       - kafka
+
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka2
+    ports:
+      - 29092:29092
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29092
+    networks:
+      - kafka
+
+  # kafka-topics-generator:
+  #   image: confluentinc/cp-kafka:latest
+  #   container_name: kafka-topics-generator
+  #   depends_on:
+  #     - kafka
+  #   command: >
+  #     bash -c
+  #       "
+  #         sleep 5s &&
+  #         kafka-topics --create --topic=loja.novo-pedido --if-not-exists --bootstrap-server=kafka:9092
+  #       "
 
 networks:
   kafka:
