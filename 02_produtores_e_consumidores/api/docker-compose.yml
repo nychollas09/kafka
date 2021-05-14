@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  produtor:
+    build:
+      context: ./produtor
+    container_name: produtor
+    entrypoint: sh ./.docker/entrypoint.sh
+    ports: 
+      - 3000:3000
+    volumes: 
+      - ./produtor:/usr/produtor/app
+    extra_hosts: 
+      - host.docker.internal:172.17.0.1

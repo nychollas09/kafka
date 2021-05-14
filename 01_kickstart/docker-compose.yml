@@ -2,7 +2,7 @@ version: "3"
 
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:6.1.1
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -10,9 +10,9 @@ services:
     networks:
       - kafka
 
-  kafka1:
-    image: confluentinc/cp-kafka:latest
-    container_name: kafka1
+  kafka:
+    image: confluentinc/cp-kafka:6.1.1
+    container_name: kafka
     ports:
       - 19092:19092
     depends_on:
@@ -20,35 +20,9 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:19092
     networks:
       - kafka
-
-  kafka2:
-    image: confluentinc/cp-kafka:latest
-    container_name: kafka2
-    ports:
-      - 29092:29092
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29092
-    networks:
-      - kafka
-
-  # kafka-topics-generator:
-  #   image: confluentinc/cp-kafka:latest
-  #   container_name: kafka-topics-generator
-  #   depends_on:
-  #     - kafka
-  #   command: >
-  #     bash -c
-  #       "
-  #         sleep 5s &&
-  #         kafka-topics --create --topic=loja.novo-pedido --if-not-exists --bootstrap-server=kafka:9092
-  #       "
 
 networks:
   kafka:
